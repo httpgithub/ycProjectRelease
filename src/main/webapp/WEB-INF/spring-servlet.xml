@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+                           http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+<import resource="classpath*:applicationContext.xml"/>
+   <!-- Resource Handlers   location前后需要 "/"-->
+<mvc:resources location="/WEB-INF/resources/" mapping="/resources/**"></mvc:resources>
+<mvc:annotation-driven/>
+    <!-- 不需要此配置 <mvc:default-servlet-handler />-->
+<context:component-scan base-package="com.may.controller"/>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="jsonMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+
+
+
+
+    <bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+
+
+    <bean id="templateResolver"
+          class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+        <property name="prefix" value="/WEB-INF/pages/" />
+      <!--  <property name="suffix" value=".html" />-->
+        <property name="characterEncoding" value="UTF-8" />
+        <property name="templateMode" value="HTML5" />
+    </bean>
+    
+  <bean id="templateEngine"
+        class="org.thymeleaf.spring4.SpringTemplateEngine">
+      <property name="templateResolvers">
+          <set>
+              <ref bean="templateResolver" />
+          </set>
+      </property>
+  </bean>
+
+
+    <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine" />
+        <property name="characterEncoding" value="UTF-8" />
+        <property name="order" value="1" />
+        <property name="viewNames" value="*.html,*.xhtml" />
+    </bean>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--&lt;!&ndash; Thymeleaf View Resolver - implementation of Spring's ViewResolver interface &ndash;&gt;
+    <bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine" />
+        <property name="characterEncoding" value="UTF-8" />
+    </bean>
+
+    &lt;!&ndash; Thymeleaf Template Engine (Spring4-specific version) &ndash;&gt;
+    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+        <property name="templateResolvers">
+            <set>
+                <ref bean="templateResolver" />
+            </set>
+        </property>
+    </bean>
+
+    &lt;!&ndash; Thymeleaf Template Resolver &ndash;&gt;
+    <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+        <property name="prefix" value="/WEB-INF/pages/" />
+        <property name="templateMode" value="HTML" />
+    </bean>-->
+    
+</beans>
+
+

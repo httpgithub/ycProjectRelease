@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/olton/Metro-UI-CSS/master/build/css/metro-icons.min.css">
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="https://raw.githubusercontent.com/botmonster/jquery-bootpag/master/lib/jquery.bootpag.min.js" th:src="@{/resources/js/jquery.bootpag.min.js}"></script>
+    <script src="https://cdn.rawgit.com/olton/Metro-UI-CSS/master/build/js/metro.min.js"></script>
+
+</head>
+<body>
+<div id="content">
+    <table class="table hovered border bordered" id="main_table_demo">
+        <thead>
+        <tr>
+            <th>发布人</th>
+            <th>发布内容</th>
+            <th>发布时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--<tr>
+            <td>a</td>
+            <td>b</td>
+            <td>c</td>
+        </tr>-->
+        </tbody>
+    </table>
+</div>
+<div id="page-selection"></div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                成功删除文件
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">关闭
+                </button>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/List'">
+                    确认
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</body>
+<script>
+    $(document).ready(function(){
+        pageList(1,10);
+    });
+
+    function pageList(num,pageSize) {
+        $("#content table tbody tr").remove();
+        $.ajax({
+            url : "/releasePersonListPage",
+            type: "GET",
+            data:{"pageNum":num,"pageSize":pageSize},
+            success: function(data){
+                console.info(data);
+                var $tr =  $("<tr>"
+                        +"<td></td>"
+                        +"<td></td>"
+                        +"<td></td>"
+                        +"<td></td>"
+                        +"<td></td>"
+                        +"</tr>");
+                $.each(data.releaseListWithBLOBs,function () {
+                    $($tr.find("td")[0]).text(this.id).hide();
+                    $($tr.find("td")[1]).text(this.createperson);
+                    $($tr.find("td")[2]).text(this.pathlist);
+                    $($tr.find("td")[3]).text(this.createdate);
+                    $($tr.find("td")[4]).html("<button type=\"button\" class=\"btn btn-default\">删除</button>");
+                    console.info($tr[0].outerHTML);
+                    $("#content table tbody").append($tr[0].outerHTML.replace("\n", "<br />"));
+
+                    $("#main_table_demo tbody tr td .btn-default").off("click").on("click",function(){
+                        var fileId = $(this).parent("td").parent("tr").children(":first").text()
+                        $.ajax({
+                            url:"/deleteFile",
+                            data:{fileId:fileId},
+                            success:function (data) {
+                               if(data=="1"){
+                                   $("#myModal").modal('show')
+                               }
+                            }
+                        });
+                    });
+                });
+
+
+                try{
+                    // init bootpag
+                    $('#page-selection').bootpag({
+                        total: data.totalCount
+                    }).on("page", function(event, /* page number here */ num){
+                        pageList(num,pageSize)
+
+                    });
+                }catch (error){
+
+                }
+
+            }
+        })
+    }
+</script>
+</html>

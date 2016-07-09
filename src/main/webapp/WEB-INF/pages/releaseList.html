@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>发布页</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="navbar">
+    <h1>发布文件</h1>
+</div>
+<form class="form-horizontal" role="form" action="#" th:action="@{/saveReleaseList}" method="post">
+    <div class="form-group">
+        <label for="firstname" class="col-sm-2 control-label">系统</label>
+        <div class="col-sm-4">
+            <select class="form-control" name="systemname" id="systemname">
+                <option value="yc">云仓</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="lastname" class="col-sm-2 control-label">发布人</label>
+        <div class="col-sm-4">
+            <select class="form-control" name="createperson" id="createperson">
+                <option value="">发布人姓名</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="lastname" class="col-sm-2 control-label">文件路径</label>
+        <div class="col-sm-4">
+           <textarea  name="pathlist" class="form-control" style="margin: 0px -396.672px 0px 0px; width: 831px; height: 262px;" placeholder="文件已逗号分隔">
+
+           </textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="lastname" class="col-sm-2 control-label">发布说明</label>
+        <div class="col-sm-4">
+           <textarea  name="releaseMark" class="form-control" style="margin: 0px -396.672px 0px 0px; width: 831px; height: 262px;" placeholder="文件已逗号分隔">
+
+           </textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">添加</button>
+        </div>
+    </div>
+</form>
+</body>
+<script type="text/javascript">
+    $(document).ready(function(){
+        getPersonList();
+    });
+function getPersonList() {
+    var systemName = $("#systemname option:selected").val();
+    $.ajax({
+        url: "releasePersonList",
+        data: { "systemName": systemName },
+        type: "GET",
+        success:function (data) {
+            try{
+                if(data.length>0){
+                    $("#createperson option").remove();
+                    $("#createperson").append("<option value=''>請選擇发布人姓名</option>");
+                    $.each(data,function () {
+                        $("#createperson").append("<option value=\'"+this.id+"\'>"+this.releasename+"</option>");
+                    });
+                }
+            }catch (error){
+
+            }
+        }
+    });
+}
+
+</script>
+</html>
