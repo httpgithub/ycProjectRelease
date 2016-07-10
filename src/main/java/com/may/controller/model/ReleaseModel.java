@@ -8,15 +8,17 @@ import java.util.Date;
  */
 public class ReleaseModel  implements Serializable {
     private static final long serialVersionUID = 6235432904070822535L;
+    private String id;
+
     private String releaseMark;
 
-    private Date createdate;
+    private String createdate;
 
     private String createperson;
 
-    private Date updatedate;
+    private String updatedate;
 
-    private Date updateperson;
+    private String updateperson;
 
     private String isused;
 
@@ -32,11 +34,11 @@ public class ReleaseModel  implements Serializable {
         this.releaseMark = releaseMark;
     }
 
-    public Date getCreatedate() {
+    public String getCreatedate() {
         return createdate;
     }
 
-    public void setCreatedate(Date createdate) {
+    public void setCreatedate(String createdate) {
         this.createdate = createdate;
     }
 
@@ -48,19 +50,19 @@ public class ReleaseModel  implements Serializable {
         this.createperson = createperson;
     }
 
-    public Date getUpdatedate() {
+    public String getUpdatedate() {
         return updatedate;
     }
 
-    public void setUpdatedate(Date updatedate) {
+    public void setUpdatedate(String updatedate) {
         this.updatedate = updatedate;
     }
 
-    public Date getUpdateperson() {
+    public String getUpdateperson() {
         return updateperson;
     }
 
-    public void setUpdateperson(Date updateperson) {
+    public void setUpdateperson(String updateperson) {
         this.updateperson = updateperson;
     }
 
@@ -86,5 +88,12 @@ public class ReleaseModel  implements Serializable {
 
     public void setSystemname(String systemname) {
         this.systemname = systemname;
+    }
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

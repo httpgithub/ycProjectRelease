@@ -1,6 +1,7 @@
 package com.may.controller;
 
 import com.github.pagehelper.PageHelper;
+import com.may.common.utils.BeanUtils;
 import com.may.controller.model.ReleaseModel;
 import com.may.mybatis.dao.ReleaseListMapper;
 import com.may.mybatis.dao.ReleasePersonMapper;
@@ -15,10 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 
 /**
@@ -27,13 +26,14 @@ import java.util.Map;
 @Controller
 public class YcProjectReleaseController {
     private static final int defaultPageSize = 10;
+    private static final String RETURNCODE_FAIL = "000000";
+    private static final String returncode_success = "111111";
     @Autowired
     private ReleaseListMapper releaseListMapper;
     @Autowired
     private ReleasePersonMapper releasePersonMapper;
-    @RequestMapping(value = {"/release","/"},method = RequestMethod.GET)
+    @RequestMapping(value = {"/release"},method = RequestMethod.GET)
     public String toReleaseList(){
-        System.out.print("sdsdssdsddddddd");
         return "releaseList.html";
     }
     @RequestMapping(value = "/saveReleaseList",method = RequestMethod.POST)
@@ -42,13 +42,19 @@ public class YcProjectReleaseController {
         String  returnCode = "";
         String  createperson = releaseModel.getCreateperson();
         if(!StringUtils.isEmpty(createperson)){
-            returnMessage="???????";
+            returnCode=RETURNCODE_FAIL;
+            returnMessage="发布人不能为空";
+            return returnCode;
         }
         if (!StringUtils.isEmpty(releaseModel.getPathlist())){
-            returnMessage="??q??????";
+            returnCode=RETURNCODE_FAIL;
+            returnMessage="发布文件不能为空";
+            return returnCode;
         }
         if (!StringUtils.isEmpty(releaseModel.getReleaseMark())){
-            returnMessage="????????";
+            returnCode=RETURNCODE_FAIL;
+            returnMessage="发布说明不为空";
+            return returnCode;
         }
 
         ReleaseListWithBLOBs releaseListWithBLOBs = new ReleaseListWithBLOBs();
@@ -59,7 +65,7 @@ public class YcProjectReleaseController {
         releaseListWithBLOBs.setReleaseMark(releaseModel.getReleaseMark());
         releaseListWithBLOBs.setIsused("1");
         releaseListMapper.insert(releaseListWithBLOBs);
-        return "";
+        return "redirect:/List";
     }
     @RequestMapping(value = "/releasePersonList")
     @ResponseBody
@@ -72,7 +78,7 @@ public class YcProjectReleaseController {
         return releasePersonList;
     }
 
-    @RequestMapping(value = "/List")
+    @RequestMapping(value = {"/List","/"})
     public String topeleasePathList(){
        return "releaseListShow.html";
     }
@@ -89,7 +95,7 @@ public class YcProjectReleaseController {
 
     @RequestMapping(value = "/releasePersonListPage")
     @ResponseBody
-    public Map<String, Object> releasePersonListPage(String pageNum, String pageSize){
+    public Map<String, Object> releasePersonListPage(String pageNum, String pageSize) throws InvocationTargetException, IllegalAccessException {
         int num = 1;
         if(!StringUtils.isEmpty(pageNum)){
             num=Integer.parseInt(pageNum);
@@ -101,16 +107,20 @@ public class YcProjectReleaseController {
         ReleaseListExample releaseListExample = new ReleaseListExample();
         ReleaseListExample.Criteria criteria  = releaseListExample.createCriteria();
         criteria.andIsusedEqualTo("1");
+        releaseListExample.setOrderByClause("createDate desc");
         List<ReleaseListWithBLOBs>  releaseListWithBLOBs= releaseListMapper.selectByExampleWithBLOBs(releaseListExample);
+        List<ReleaseModel> releaseModelList = new ArrayList<ReleaseModel>();
         if(null != releaseListWithBLOBs && !releaseListWithBLOBs.isEmpty()){
             for(ReleaseListWithBLOBs release:releaseListWithBLOBs){
-
+                ReleaseModel releaseMode = new ReleaseModel();
+                BeanUtils.copyProperties(releaseMode,release);
+                releaseModelList.add(releaseMode);
             }
         }
         int totalCount = releaseListMapper.countByExample(null);
         Map<String,Object> map = new HashMap();
         map.put("totalCount",Math.ceil(totalCount*1.0/Double.parseDouble(pageSize)));
-        map.put("releaseListWithBLOBs",releaseListWithBLOBs);
+        map.put("releaseListWithBLOBs",releaseModelList);
         return map;
     }
 
