@@ -31,10 +31,11 @@
         </javaClientGenerator>
 
 
-       <!-- <table tableName="ycProjectRelease.Release_list" domainObjectName="ReleaseList"/>
-        <table tableName="ycProjectRelease.releasePerson" domainObjectName="ReleasePerson"/>-->
+        <table tableName="ycProjectRelease.Release_list" domainObjectName="ReleaseList"/>
+        <!--<table tableName="ycProjectRelease.releasePerson" domainObjectName="ReleasePerson"/>-->
         <table tableName="ycProjectRelease.root_directories" domainObjectName="RootDirectories"/>
-
-
+        <table tableName="ycProjectRelease.releaseSystem" domainObjectName="ReleaseSystem"/>
+        <table tableName="ycProjectRelease.releaseSystem_person" domainObjectName="ReleaseSystemPerson"/>
+        <table tableName="ycProjectRelease.key_Vallue_config" domainObjectName="KeyVallueConfig"/>
     </context>
 </generatorConfiguration>

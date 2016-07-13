@@ -20,34 +20,22 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2">
-            <div class="list-group">
-                <a href="#" class="list-group-item active">Home</a>
-                <div class="list-group-item">
-                    <a href="/List" th:href="@{/List}">文件列表</a>
-                </div>
-                <div class="list-group-item">
-                    <a href="/release" th:href="@{/release}">发布文件</a>
-                </div>
-                <a class="list-group-item active">后台管理</a>
-                <div class="list-group-item ">
-                    <a class="list-group-item">后台发布列表</a>
-                    <a  href="/rootDirectories" th:href="@{/rootDirectories}" class="list-group-item">发布目录配置</a>
-                </div>
-            </div>
+        <div class="col-md-2" th:include="menu/releaseLeftMenu.html :: releaseLeftMenu">
+
         </div>
         <div class="col-md-10">
-            <form class="form-horizontal" id="fileForm" role="form" action="#" th:action="@{/saveReleaseList}" method="post">
+            <!--<form class="form-horizontal" id="fileForm" role="form" action="#" th:action="@{/saveReleaseList}" method="post">-->
+            <div class="form-horizontal" id="fileForm" role="form">
                 <div class="form-group">
-                    <label for="firstname" class="col-sm-2 control-label">系统</label>
+                    <label for="systemname" class="col-sm-2 control-label">系统</label>
                     <div class="col-sm-4">
                         <select class="form-control" name="systemname" id="systemname">
-                            <option value="yc">云仓</option>
+                            <option value="001">云仓</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="lastname" class="col-sm-2 control-label">发布人</label>
+                    <label for="createperson" class="col-sm-2 control-label">发布人</label>
                     <div class="col-sm-4">
                         <select class="form-control" name="createperson" id="createperson">
                             <option value="">发布人姓名</option>
@@ -55,15 +43,13 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="lastname" class="col-sm-2 control-label">文件路径</label>
+                    <label for="pathlist" class="col-sm-2 control-label">文件路径</label>
                     <div class="col-sm-4">
-           <textarea  name="pathlist" id="pathlist" class="form-control" style="margin: 0px -396.672px 0px 0px; width: 831px; height: 262px;" placeholder="文件已逗号分隔">
-
-           </textarea>
+           <textarea  name="pathlist" id="pathlist" class="form-control" style="margin: 0px -396.672px 0px 0px; width: 831px; height: 262px;" placeholder="文件格式如下:cloud/....  WEB-INF/classes/com/..."></textarea>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="lastname" class="col-sm-2 control-label">发布说明</label>
+                    <label for="releaseMark" class="col-sm-2 control-label">发布说明</label>
                     <div class="col-sm-4">
            <textarea  name="releaseMark" id="releaseMark" class="form-control" style="margin: 0px -396.672px 0px 0px; width: 831px; height: 262px;" placeholder="文件已逗号分隔">
 
@@ -75,25 +61,48 @@
                         <button type="text" id="fileButton" class="btn btn-default">添加</button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 </form>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="reModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body text-center">
+                发布已截止
+            </div>
+        </div>
+    </div>
+</div>
 <script src="" th:src="@{/resources/js/base.js}"></script>
+<script src="" th:src="@{/resources/js/loading.js}"></script>
+<script src="" th:src="@{/resources/js/bootbox.js}"></script>
+<script src="" th:src="@{/resources/js/releaseSystem.js}"></script>
+
 </body>
 <script type="text/javascript">
+    comfirmIsEnd();
     $(document).ready(function(){
-        getPersonList();
-        $("#fileButton").off("click").on("click",function () {
-            return saveFilePathList();
+        getReleaseSystemlist(function () {
+            getPersonList();
         });
+
+        $("#fileButton").off("click").on("click",function () {
+             saveFilePathList();
+        });
+
     });
 function getPersonList() {
+    waitingDialog.show('数据加载中');
     var systemName = $("#systemname option:selected").val();
     $.ajax({
-        url: "releasePersonList",
-        data: { "systemName": systemName },
+        url: "/releasePersonList",
+        data: { "systemId": systemName },
         type: "GET",
         success:function (data) {
             try{
@@ -107,6 +116,7 @@ function getPersonList() {
             }catch (error){
 
             }
+            waitingDialog.hide();
         }
     });
 }
@@ -121,7 +131,7 @@ if(systemname.length<1){
     return false;
 }
     if(createperson.length<1){
-        showModal("请选择发布系统")
+        showModal("请选择发布人")
         return false;
     }
     if(pathlist.length<1){
@@ -132,9 +142,35 @@ if(systemname.length<1){
         showModal("发布说明不能为空")
         return false;
     }
-    return true;
+    waitingDialog.show('数据保存中');
+    $.ajax({
+        url:"/saveReleaseList",
+        data:{"systemid":$("#systemname :selected").val(),"systemname":$("#systemname :selected").text(),"createperson":createperson,"pathlist":pathlist,"releaseMark":releaseMark,"releasepersonid":$.trim($("#createperson :selected").val()),"releasepersonname":$.trim($("#createperson :selected").text()),"systemid":$.trim($("#systemname :selected").val()),"systemname":$.trim($("#systemname :selected").text())},
+        success:function (data) {
+            waitingDialog.hide();
+            if(data.returnCode == "111111"){
+                window.location.href="/List";
+            }else{
+                showModal(data.returnMessage);
+            }
+        }
+    });
 }
-    
+function comfirmIsEnd() {
+    waitingDialog.show('数据加载中');
+    $.ajax({
+        url:"/comfirmIsEnd",
+        data:{},
+        success:function(data){
+            if(data=="111111"){
+                $("#reModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }).modal("show");
+            }
+        }
+    });
+}
 
 </script>
 </html>

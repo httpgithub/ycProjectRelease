@@ -16,6 +16,8 @@ public class ReleaseModel  implements Serializable {
 
     private String createperson;
 
+    private String createpersonName;
+
     private String updatedate;
 
     private String updateperson;
@@ -24,7 +26,27 @@ public class ReleaseModel  implements Serializable {
 
     private String pathlist;
 
+
+    private String isDelete;
+
+    private String ispublish;
+    private String releasepersonid;
+
+    private String releasepersonname;
+
+    private String systemid;
+
     private String systemname;
+
+    private String isend;
+
+    public String getIsend() {
+        return isend;
+    }
+
+    public void setIsend(String isend) {
+        this.isend = isend;
+    }
 
     public String getReleaseMark() {
         return releaseMark;
@@ -96,4 +118,53 @@ public class ReleaseModel  implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
+    public String getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(String isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    public String getIspublish() {
+        return ispublish;
+    }
+
+    public void setIspublish(String ispublish) {
+        this.ispublish = ispublish;
+    }
+
+    public String getCreatepersonName() {
+        return createpersonName;
+    }
+
+    public void setCreatepersonName(String createpersonName) {
+        this.createpersonName = createpersonName;
+    }
+
+    public String getReleasepersonid() {
+        return releasepersonid;
+    }
+
+    public void setReleasepersonid(String releasepersonid) {
+        this.releasepersonid = releasepersonid;
+    }
+
+    public String getReleasepersonname() {
+        return releasepersonname;
+    }
+
+    public void setReleasepersonname(String releasepersonname) {
+        this.releasepersonname = releasepersonname;
+    }
+
+    public String getSystemid() {
+        return systemid;
+    }
+
+    public void setSystemid(String systemid) {
+        this.systemid = systemid;
+    }
+
 }

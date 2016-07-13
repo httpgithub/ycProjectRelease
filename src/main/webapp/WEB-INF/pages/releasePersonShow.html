@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>目录配置</title>
+    <title>发布人员</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/resources/css/bootstrap-theme.min.css}">
@@ -16,7 +16,7 @@
     <div class="row-fluid">
         <div class="col-md-12">
             <h3 class="text-center">
-                发布文件列表
+                发布人员列表
             </h3>
         </div>
     </div>
@@ -27,13 +27,13 @@
             <form class="form-search form-inline">
                 <input class="input-medium search-query" type="text" /> <button type="submit" class="btn">查找</button>
             </form>
-            <div><button type="button" id="addRootDirectories">添加目录</button></div>
+            <div><button type="button" id="addReleaseUser">添加目录</button></div>
             <table class="table table-bordered" id="filetable">
                 <thead>
                 <tr>
-                    <th>序号</th>
-                    <th>目录名字</th>
-                    <th>发布时间</th>
+                    <th>系统名称</th>
+                    <th>发布人员</th>
+                    <th>添加时间</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -66,18 +66,17 @@
                                         目录所在系统
                                     </label>
                                     <div class="col-sm-9">
-                                        <select class="form-control" name="sysId" id="sysId">
-                                            <option value="1">云仓</option>
+                                        <select class="form-control" name="systemname" id="systemname">
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
 
-                                    <label for="directorieyName" class="col-sm-3 control-label">
-                                        目录名字
+                                    <label for="releaseName" class="col-sm-3 control-label">
+                                        发布人员姓名
                                     </label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="directorieyName" />
+                                        <input type="text" class="form-control" id="releaseName"/>
                                     </div>
                                 </div>
                             </form>
@@ -94,15 +93,17 @@
 </div>
 <script src="" th:src="@{/resources/js/base.js}"></script>
 <script src="" th:src="@{/resources/js/loading.js}"></script>
+<script src="" th:src="@{/resources/js/releaseSystem.js}"></script>
 </body>
 <script>
     $(document).ready(function(){
         pageList(1,10);
-        $("#addRootDirectories").off("click").on("click",function () {
+        $("#addReleaseUser").off("click").on("click",function () {
             $("#rootDirectoriesModal").modal("show");
+            getReleaseSystemlist();
         });
         $("#addButton").off("click").on("click",function () {
-            addRootDirectories();
+            addReleaseUser();
         })
     });
 
@@ -110,7 +111,7 @@
         waitingDialog.show('列表获取中');
         $("#filetable tbody tr").remove();
         $.ajax({
-            url : "/rootDirectoriesListPage",
+            url : "/personListPage",
             type: "GET",
             data:{"pageNum":num,"pageSize":pageSize},
             success: function(data){
@@ -122,11 +123,11 @@
                         +"<td></td>"
                         +"<td></td>"
                         +"</tr>");
-                $.each(data.rootDirectoriesList,function () {
+                $.each(data.list,function () {
                     $($tr.find("td")[0]).text(this.id).hide();
-                    $($tr.find("td")[1]).text(this.id);
-                    $($tr.find("td")[2]).text(this.directorieyName);
-                    $($tr.find("td")[3]).text(this.createDate);
+                    $($tr.find("td")[1]).text(this.systemName);
+                    $($tr.find("td")[2]).text(this.releasename);
+                    $($tr.find("td")[3]).text(this.createdate);
                     $($tr.find("td")[4]).html("<button type=\"button\" class=\"btn btn-default\">删除</button>");
                     console.info($tr[0].outerHTML);
                     $("#filetable tbody").append($tr[0].outerHTML.replace("\n", "<br />"));
@@ -167,31 +168,31 @@
         })
     }
     
-    function addRootDirectories() {
-        var sysId = $.trim($("#sysId").val());
-        var directorieyName = $.trim($("#directorieyName").val());
+    function addReleaseUser() {
+        var sysId = $.trim($("#systemname").val());
+        var releaseName = $.trim($("#releaseName").val());
         if(sysId.length<1){
             showModal("请选择发布系统")
             return false;
         }
-        if(directorieyName.length<1){
-            showModal("目录名不能为空")
+        if(releaseName.length<1){
+            showModal("发布人不能为空")
             return false;
         }
-        waitingDialog.show("目录添加中")
+        waitingDialog.show("添加中")
         $.ajax({
-            url:"/save",
-            data:{"sysId":sysId,"directorieyName":directorieyName},
+            url:"/savePersion",
+            data:{"sysId":sysId,"releaseName":releaseName},
             success:function (data) {
-             if(data=="111111"){
-                 showModal("目录保存成功",function () {
-                     window.location.href="/rootDirectories";
+             if(data.returnCode=="111111"){
+                 showModal("保存成功",function () {
+                     window.location.href="/toReleasePersonPage";
                  },function(){
                      $("#rootDirectoriesModal").modal("hide")
                  })
              }else{
-                 showModal("目录保存出错",function () {
-                     window.location.href="/rootDirectories";
+                 showModal("保存出错",function () {
+                     window.location.href="/toReleasePersonPage";
                  },function(){
                              $("#rootDirectoriesModal").modal("hide")
                  })

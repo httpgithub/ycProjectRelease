@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>发布文件列表</title>
+    <title>后台文件列表</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" th:href="@{/resources/css/bootstrap-theme.min.css}">
     <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script src="https://raw.githubusercontent.com/botmonster/jquery-bootpag/master/lib/jquery.bootpag.min.js" th:src="@{/resources/js/jquery.bootpag.min.js}"></script>
 
 </head>
@@ -16,18 +16,21 @@
     <div class="row-fluid">
         <div class="col-md-12">
             <h3 class="text-center">
-                发布文件列表
+                后台发布文件列表
             </h3>
         </div>
     </div>
     <div class="row-fluid">
-        <div class="col-md-2" th:include="menu/releaseLeftMenu.html :: releaseLeftMenu">
+        <div class="col-md-2" th:include="menu/adminLeftMenu.html :: adminLeftMenu">
         </div>
         <div class="col-md-10">
             <form class="form-search form-inline">
                 <input class="input-medium search-query" type="text" /> <button type="submit" class="btn">查找</button>
             </form>
-            <table class="table" id="filetable">
+            <div style="padding-top: 15px;"><button type="button" id="endReleaseList" >截止发布</button></div>
+            <div style="padding-top: 15px;padding-bottom: 15px;"><button type="button" id="showDeleteButton" >显示删除按钮</button></div>
+            <div style="padding-top: 15px;padding-bottom: 15px;"><button type="button" id="startReleaseList" >开始发布</button></div>
+            <table class="table table-bordered" id="filetable">
                 <thead>
                 <tr>
                     <th>发布人</th>
@@ -42,8 +45,6 @@
             </div>
         </div>
     </div>
-
-</div>
 <script src="" th:src="@{/resources/js/base.js}"></script>
 <script src="" th:src="@{/resources/js/loading.js}"></script>
 <script src="" th:src="@{/resources/js/bootbox.js}"></script>
@@ -51,37 +52,42 @@
 <script>
     $(document).ready(function(){
         pageList(1,10);
+        $("#addRootDirectories").off("click").on("click",function () {
+            $("#rootDirectoriesModal").modal("show");
+        });
+        $("#endReleaseList").off("click").on("click",function () {
+            endReleaseList();
+        });
+        $("#startReleaseList").off("click").on("click",function () {
+            startPublish();
+        });
+
     });
 
     function pageList(num,pageSize) {
         waitingDialog.show('列表获取中');
         $("#filetable tbody tr").remove();
         $.ajax({
-            url : "/releasePersonListPage",
+            url : "/adminFilePathListPage",
             type: "GET",
             data:{"pageNum":num,"pageSize":pageSize},
             success: function(data){
                 console.info(data);
+                var $tr =  $("<tr>"
+                        +"<td></td>"
+                        +"<td></td>"
+                        +"<td></td>"
+                        +"<td></td>"
+                        +"<td></td>"
+                        +"</tr>");
                 $.each(data.releaseListWithBLOBs,function () {
-                    var $tr =  $("<tr>"
-                            +"<td></td>"
-                            +"<td></td>"
-                            +"<td></td>"
-                            +"<td></td>"
-                            +"<td></td>"
-                            +"</tr>");
                     $($tr.find("td")[0]).text(this.id).hide();
-                    $($tr.find("td")[1]).text(this.createpersonName);
-                    $($tr.find("td")[2]).html(this.pathlist.replace("\n", "<br />"));
+                    $($tr.find("td")[1]).text(this.createperson);
+                    $($tr.find("td")[2]).text(this.pathlist);
                     $($tr.find("td")[3]).text(this.createdate);
-
-
-                    if("1"==this.isDelete){
-                        $($tr.find("td")[4]).html("<button type=\"button\" class=\"btn btn-default\">删除</button>");
-                    }
-
+                    $($tr.find("td")[4]).html("<button type=\"button\" class=\"btn btn-default delete\">删除</button>").hide();
                     console.info($tr[0].outerHTML);
-                    $("#filetable tbody").append($tr[0].outerHTML);
+                    $("#filetable tbody").append($tr[0].outerHTML.replace("\n", "<br />"));
 
                     $("#filetable tbody tr td .btn-default").off("click").on("click",function(){
                         var obj = $(this);
@@ -92,7 +98,7 @@
                                 url:"/deleteFile",
                                 data:{fileId:fileId},
                                 success:function (data) {
-                                    if(data.returnCode=="111111"){
+                                    if(data=="1"){
                                         showModal("刪除成功",function () {
                                             window.location.href="/List";
                                         },function () {
@@ -112,7 +118,7 @@
                     $('#page-selection').bootpag({
                         total: data.totalCount
                     }).off("page").on("page", function(event, /* page number here */ num){
-                        pageList(num,pageSize)
+                        pageList(num,pageSize);
                     });
                 }catch (error){
 
@@ -120,6 +126,34 @@
                 waitingDialog.hide();
             }
         })
+    }
+    
+    function endReleaseList() {
+        waitingDialog.show("正在截止发布");
+        $.ajax({
+            url:"/endPublish",
+            data:{},
+            success:function (data) {
+                waitingDialog.hide();
+                if(data=="111111"){
+                    bootbox.alert("截止成功")
+                }
+            }
+        });
+    }
+
+    function startPublish() {
+        waitingDialog.show("正在允许发布");
+        $.ajax({
+            url:"/startPublish",
+            data:{},
+            success:function (data) {
+                waitingDialog.hide();
+                if(data=="111111"){
+                    bootbox.alert("允许发布成功")
+                }
+            }
+        });
     }
 </script>
 </html>

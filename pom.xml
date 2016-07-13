@@ -228,7 +228,7 @@
                     <update>true</update>
                     <port>9090</port>
                     <path>/</path>
-                    <url>http://127.0.0.1:9090/manager/text</url>    <!-- 版本不一样可能地址不同 配置远程tomcat的路劲-->
+                    <!--<url>http://127.0.0.1:9090/manager/text</url> -->   <!-- 版本不一样可能地址不同 配置远程tomcat的路劲-->
                     <username>admin</username>
                     <password>admin</password>
                     <uriEncoding>UTF-8</uriEncoding>   <!--tomcat的url编码  达到和修改server.xml文件一样的功能-->
