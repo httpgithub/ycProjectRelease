@@ -9,11 +9,44 @@
 /*!40101 SET NAMES utf8mb4 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- 导出 ycProjectRelease 的数据库结构
+CREATE DATABASE IF NOT EXISTS `ycProjectRelease` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `ycProjectRelease`;
+
+
+-- 导出  表 ycProjectRelease.key_Vallue_config 结构
+CREATE TABLE IF NOT EXISTS `key_Vallue_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `rkey` varchar(50) NOT NULL,
+  `rvalue` varchar(50) NOT NULL,
+  `remark` varchar(50) DEFAULT NULL,
+  `isused` varchar(50) NOT NULL,
+  `create_date` datetime NOT NULL,
+  `create_person` varchar(50) NOT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `update_person` varchar(50) DEFAULT NULL,
+  KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
 -- 正在导出表  ycProjectRelease.key_Vallue_config 的数据：~1 rows (大约)
 /*!40000 ALTER TABLE `key_Vallue_config` DISABLE KEYS */;
 INSERT INTO `key_Vallue_config` (`id`, `rkey`, `rvalue`, `remark`, `isused`, `create_date`, `create_person`, `update_date`, `update_person`) VALUES
 	(1, 'endendPublish', '0', '1', '1', '2016-07-13 16:10:41', 'DB', '2016-07-13 09:29:53', NULL);
 /*!40000 ALTER TABLE `key_Vallue_config` ENABLE KEYS */;
+
+
+-- 导出  表 ycProjectRelease.releasePerson 结构
+CREATE TABLE IF NOT EXISTS `releasePerson` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `releaseName` varchar(50) NOT NULL,
+  `createDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updateDate` datetime DEFAULT CURRENT_TIMESTAMP,
+  `isUsed` varchar(2) NOT NULL DEFAULT '1',
+  `remark` text,
+  `systemCode` varchar(50) DEFAULT NULL,
+  KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COMMENT='发布人';
 
 -- 正在导出表  ycProjectRelease.releasePerson 的数据：~13 rows (大约)
 /*!40000 ALTER TABLE `releasePerson` DISABLE KEYS */;
@@ -33,11 +66,34 @@ INSERT INTO `releasePerson` (`id`, `releaseName`, `createDate`, `updateDate`, `i
 	(23, '付健', '2016-07-13 07:22:30', '2016-07-13 00:22:30', '1', NULL, NULL);
 /*!40000 ALTER TABLE `releasePerson` ENABLE KEYS */;
 
+
+-- 导出  表 ycProjectRelease.releaseSystem 结构
+CREATE TABLE IF NOT EXISTS `releaseSystem` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `system_name` varchar(50) NOT NULL,
+  `system_remark` varchar(50) DEFAULT NULL,
+  `create_persion` varchar(50) NOT NULL,
+  `create_date` datetime NOT NULL,
+  `update_persion` varchar(50) DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `is_used` varchar(50) NOT NULL DEFAULT '1',
+  KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='发布系统';
+
 -- 正在导出表  ycProjectRelease.releaseSystem 的数据：~1 rows (大约)
 /*!40000 ALTER TABLE `releaseSystem` DISABLE KEYS */;
 INSERT INTO `releaseSystem` (`id`, `system_name`, `system_remark`, `create_persion`, `create_date`, `update_persion`, `update_date`, `is_used`) VALUES
 	(1, '云仓', NULL, 'db', '2016-07-13 10:17:17', NULL, NULL, '1');
 /*!40000 ALTER TABLE `releaseSystem` ENABLE KEYS */;
+
+
+-- 导出  表 ycProjectRelease.releaseSystem_person 结构
+CREATE TABLE IF NOT EXISTS `releaseSystem_person` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `releaseSystemid` int(11) NOT NULL,
+  `releasepersonId` int(11) NOT NULL,
+  KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 -- 正在导出表  ycProjectRelease.releaseSystem_person 的数据：~13 rows (大约)
 /*!40000 ALTER TABLE `releaseSystem_person` DISABLE KEYS */;
@@ -57,11 +113,44 @@ INSERT INTO `releaseSystem_person` (`id`, `releaseSystemid`, `releasepersonId`) 
 	(20, 1, 23);
 /*!40000 ALTER TABLE `releaseSystem_person` ENABLE KEYS */;
 
+
+-- 导出  表 ycProjectRelease.Release_list 结构
+CREATE TABLE IF NOT EXISTS `Release_list` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pathList` text NOT NULL COMMENT '文件路径',
+  `systemName` varchar(50) NOT NULL COMMENT '发布系统名称',
+  `release_mark` varchar(500) NOT NULL COMMENT '发布功能说明',
+  `createDate` datetime NOT NULL COMMENT '创建日期',
+  `createPerson` varchar(50) NOT NULL COMMENT '发布人',
+  `updateDate` datetime DEFAULT NULL COMMENT '更新日期',
+  `updatePerson` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `isUsed` varchar(1) NOT NULL DEFAULT '1' COMMENT '是否可用1:可用',
+  `ispublish` varchar(1) NOT NULL DEFAULT '0' COMMENT '是否发布1：发布，0：未发布',
+  `releasePersonId` varchar(50) NOT NULL COMMENT '发布人ID',
+  `releasePersonName` varchar(50) NOT NULL COMMENT '发布人名字',
+  `systemID` varchar(50) NOT NULL COMMENT '发布系统ID',
+  KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='发布清单';
+
 -- 正在导出表  ycProjectRelease.Release_list 的数据：~1 rows (大约)
 /*!40000 ALTER TABLE `Release_list` DISABLE KEYS */;
 INSERT INTO `Release_list` (`id`, `pathList`, `systemName`, `release_mark`, `createDate`, `createPerson`, `updateDate`, `updatePerson`, `isUsed`, `ispublish`, `releasePersonId`, `releasePersonName`, `systemID`) VALUES
 	(25, 'cloud/owner/basic_biz/booking/put_in/put_in.js\ncloud/owner/basic_biz/booking/put_in/put_in.js', '云仓', 'test', '2016-07-13 10:07:57', '11', NULL, NULL, '1', '0', '11', '董盼', '1');
 /*!40000 ALTER TABLE `Release_list` ENABLE KEYS */;
+
+
+-- 导出  表 ycProjectRelease.root_directories 结构
+CREATE TABLE IF NOT EXISTS `root_directories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `directoriey_name` varchar(100) NOT NULL,
+  `isUsed` varchar(2) NOT NULL DEFAULT '1',
+  `create_date` datetime NOT NULL,
+  `create_persion` varchar(50) NOT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `update_persion` varchar(50) DEFAULT NULL,
+  `sys_id` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8;
 
 -- 正在导出表  ycProjectRelease.root_directories 的数据：~43 rows (大约)
 /*!40000 ALTER TABLE `root_directories` DISABLE KEYS */;
