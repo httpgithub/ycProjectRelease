@@ -30,6 +30,7 @@
             <div style="padding-top: 15px;"><button type="button" id="endReleaseList" >截止发布</button></div>
             <div style="padding-top: 15px;padding-bottom: 15px;"><button type="button" id="showDeleteButton" >显示删除按钮</button></div>
             <div style="padding-top: 15px;padding-bottom: 15px;"><button type="button" id="startReleaseList" >开始发布</button></div>
+            <div style="padding-top: 15px;padding-bottom: 15px;"><button type="button" id="commentRelease" >显示发布</button></div>
             <table class="table table-bordered" id="filetable">
                 <thead>
                 <tr>
@@ -61,7 +62,9 @@
         $("#startReleaseList").off("click").on("click",function () {
             startPublish();
         });
-
+        $("#commentRelease").off("click").on("click",function () {
+            releaseModelList();
+        })
     });
 
     function pageList(num,pageSize) {
@@ -154,6 +157,20 @@
                 }
             }
         });
+    }
+    
+    function releaseModelList() {
+        waitingDialog.show("请求中");
+        $.ajax({
+            url:"/releaseContentList",
+            data:{},
+            success:function (data) {
+                if(data.length>0){
+                    bootbox.alert(data);
+                }
+            }
+        });
+        waitingDialog.hide();
     }
 </script>
 </html>

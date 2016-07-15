@@ -2,6 +2,7 @@ package com.may.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.may.common.utils.BeanUtils;
+import com.may.common.utils.DateUtil;
 import com.may.controller.model.ReleaseModel;
 import com.may.controller.model.RootDirectoriesModel;
 import com.may.mybatis.dao.KeyVallueConfigMapper;
@@ -177,6 +178,24 @@ public class AdminYcProjectReleaseController {
         criteriaKeyVallueConfigExample.andIsusedEqualTo("1");
         keyVallueConfigMapper.updateByExampleSelective(recordKeyVallueConfig,keyVallueConfigExample);
         return "111111";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/releaseContentList")
+    public String  getReleaseContent() throws InvocationTargetException, IllegalAccessException {
+        String blank = "    ";
+        ReleaseListExample releaseListExample = new ReleaseListExample();
+        ReleaseListExample.Criteria criteria = releaseListExample.createCriteria();
+        criteria.andIsusedEqualTo("1");
+        criteria.andCreatedateBetween(DateUtil.getStartDate(),DateUtil.getStartDate(1));
+        List<ReleaseList> releaseList =releaseListMapper.selectByExampleWithBLOBs(releaseListExample);
+        List<ReleaseModel> releaseModelList = new ArrayList<ReleaseModel>();
+        StringBuffer sb = new StringBuffer("svn up  ");
+        for(ReleaseList release:releaseList){
+            sb.append(blank+release.getPathlist().replaceAll("\n",blank).replaceAll("\\\\","/").replaceAll(".java",".class"));
+        }
+        sb.append("  common/js/JS_MODI_STR.js  common/jsp/javascript.jsp  ");
+        return sb.toString();
     }
 
 }

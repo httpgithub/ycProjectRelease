@@ -30,6 +30,8 @@
         <property name="basePackage" value="com.may.mybatis.dao" />
     </bean>
 
+    <!--异常处理类-->
+    <bean class="com.may.com.may.Exception.ExceptionHandler"></bean>
 
 </beans>
 
